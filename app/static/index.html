@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestor de envíos · ARINC 429</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true">A</div>
+      <div><p class="eyebrow">LABORATORIO · TELEMETRÍA</p><h1>Gestor de envíos</h1></div>
+      <span class="status-pill"><i></i> Modo seguro</span>
+    </header>
+
+    <section class="intro">
+      <div><p class="eyebrow">ARINC 429 / BANCO DE PRUEBAS</p><h2>Un envío, de principio a fin.</h2>
+        <p>Selecciona un instrumento, registra un valor y genera su palabra ARINC de 32 bits.</p></div>
+      <div class="word-art" aria-label="Palabra digital de 32 bits"><span>32</span><small>BITS<br>ARINC</small><div class="bit-row"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div></div>
+    </section>
+
+    <section class="card composer">
+      <div class="section-heading"><div><p class="eyebrow">NUEVO REGISTRO</p><h3>Crear envío</h3></div><span class="step">01 — 03</span></div>
+      <form id="shipment-form">
+        <label>Instrumento<select id="instrument" required></select></label>
+        <label>Valor del envío<div class="value-input"><input id="value" type="number" step="any" required placeholder="0.00"><span id="unit">—</span></div><small id="range-hint"></small></label>
+        <div class="form-actions"><button class="button primary" type="submit">Crear envío <span aria-hidden="true">↗</span></button><button class="button secondary" type="button" id="preview-audio">Probar nivel en auricular <span aria-hidden="true">♫</span></button></div>
+      </form>
+      <p class="notice"><span aria-hidden="true">ⓘ</span> El tono representa el valor mediante un nivel relativo; la tensión real depende del dispositivo y no está calibrada. Con el puerto habilitado, crear también transmite la palabra por UART.</p>
+      <p id="form-message" class="message" role="status"></p>
+    </section>
+
+    <section class="card table-card">
+      <div class="section-heading"><div><p class="eyebrow">HISTORIAL</p><h3>Envíos registrados</h3></div><span id="count" class="count">0 envíos</span></div>
+      <div class="table-wrap"><table><thead><tr><th>INSTRUMENTO</th><th>VALOR</th><th>PALABRA ARINC</th><th>ESTADO</th><th>ACCIONES</th></tr></thead><tbody id="shipment-list"></tbody></table></div>
+      <div id="empty-state" class="empty-state">Aún no hay envíos. Crea el primero arriba.</div>
+    </section>
+    <footer><span>DEMO · TRANSMISIÓN FÍSICA DESHABILITADA</span><a href="/docs" target="_blank" rel="noreferrer">API / Documentación ↗</a></footer>
+  </main>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
