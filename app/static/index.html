@@ -23,7 +23,7 @@
     <section class="card composer">
       <div class="section-heading"><div><p class="eyebrow">NUEVO REGISTRO</p><h3>Crear envío</h3></div><span class="step">01 — 03</span></div>
       <form id="shipment-form">
-        <label>Instrumento<select id="instrument" required></select></label>
+        <label>Instrumento<select id="instrument" required aria-label="Seleccionar instrumento"></select><small>Abre la lista para elegir Temperatura, Presión o Altitud.</small></label>
         <label>Valor del envío<div class="value-input"><input id="value" type="number" step="any" required placeholder="0.00"><span id="unit">—</span></div><small id="range-hint"></small></label>
         <div class="form-actions"><button class="button primary" type="submit">Crear envío <span aria-hidden="true">↗</span></button><button class="button secondary" type="button" id="preview-audio">Probar nivel en auricular <span aria-hidden="true">♫</span></button></div>
       </form>
