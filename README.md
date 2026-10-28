@@ -9,6 +9,8 @@ Aplicación didáctica en español para seleccionar un instrumento, ingresar un 
 
 Copia `.env.example` a `.env`, crea un entorno virtual e instala `requirements.txt`. Inicia la base con `docker compose up -d mysql` y luego ejecuta `uvicorn app.main:app --reload`. La interfaz queda en `http://127.0.0.1:8000` y la documentación HTTP en `/docs`.
 
+**Abrir el CRUD:** [http://127.0.0.1:8000](http://127.0.0.1:8000). Este enlace funciona cuando el servidor está iniciado en tu equipo.
+
 La aplicación crea las tablas y agrega tres instrumentos de ejemplo al iniciar. Con `SERIAL_ENABLED=false`, crear un envío solo lo guarda; la transmisión queda desactivada. Con `SERIAL_ENABLED=true`, crear intenta enviar automáticamente la palabra al UART configurado y solo registra el envío si la escritura serial termina correctamente. El endpoint de retransmisión también requiere esa opción y un adaptador de laboratorio compatible.
 
 ## API
