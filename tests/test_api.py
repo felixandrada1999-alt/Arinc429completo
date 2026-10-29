@@ -50,6 +50,13 @@ def test_create_list_update_delete_shipment(client: TestClient) -> None:
     assert client.get("/api/shipments").json() == []
 
 
+def test_homepage_serves_crud_interface(client: TestClient) -> None:
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "Gestor de envíos" in response.text
+    assert client.get("/static/app.js").status_code == 200
+
+
 def test_rejects_out_of_range_value(client: TestClient) -> None:
     instrument = client.get("/api/instruments").json()[0]
     response = client.post(

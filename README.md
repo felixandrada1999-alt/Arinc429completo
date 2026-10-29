@@ -11,6 +11,12 @@ Copia `.env.example` a `.env`, crea un entorno virtual e instala `requirements.t
 
 **Abrir el CRUD:** [http://127.0.0.1:8000](http://127.0.0.1:8000). Este enlace funciona cuando el servidor está iniciado en tu equipo.
 
+### Publicarlo para abrirlo desde Internet
+
+GitHub aloja el código, pero no ejecuta esta aplicación FastAPI ni su base de datos. Por eso, abrir el repositorio o activar GitHub Pages no abre el CRUD. Para tener una URL pública, publica el servicio en Render desde este repositorio: crea un Blueprint y selecciona `render.yaml`. El Blueprint configura la aplicación y una base PostgreSQL; al terminar, Render mostrará una URL HTTPS para abrir el CRUD. Mantén `SERIAL_ENABLED=false` en la nube: el servicio alojado no tiene acceso al puerto serie de tu equipo. La base PostgreSQL gratuita, si está disponible en tu cuenta/región, puede tener límites o caducar según el plan de Render.
+
+También puedes probar localmente sin Docker/MySQL estableciendo `DATABASE_URL=sqlite:///./arinc429.db` antes de iniciar Uvicorn. Para datos persistentes de producción, usa una base administrada; el disco local de los alojamientos gratuitos puede ser efímero.
+
 La aplicación crea las tablas y agrega tres instrumentos de ejemplo al iniciar. Con `SERIAL_ENABLED=false`, crear un envío solo lo guarda; la transmisión queda desactivada. Con `SERIAL_ENABLED=true`, crear intenta enviar automáticamente la palabra al UART configurado y solo registra el envío si la escritura serial termina correctamente. El endpoint de retransmisión también requiere esa opción y un adaptador de laboratorio compatible.
 
 ## API
