@@ -25,6 +25,8 @@ class ShipmentRead(BaseModel):
     instrument_name: str
     unit: str
     value: float
+    min_value: float
+    max_value: float
     arinc_word: int
     arinc_hex: str
     created_at: datetime | None

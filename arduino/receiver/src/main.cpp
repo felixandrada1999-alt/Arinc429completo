@@ -1,17 +1,23 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <Servo.h>
 
 namespace {
 constexpr uint32_t SERIAL_BAUD = 115200;
 constexpr uint8_t ONE_PIN = 13;
 constexpr uint8_t ZERO_PIN = 12;
+constexpr uint8_t SERVO_PIN = 9;
+// Adjust and mechanically test these limits for the specific servo/linkage.
+constexpr uint8_t SERVO_MIN_DEGREES = 20;
+constexpr uint8_t SERVO_MAX_DEGREES = 160;
 constexpr uint16_t BIT_PULSE_MS = 10;
 constexpr uint16_t INPUT_TIMEOUT_MS = 250;
 constexpr uint32_t DATA_MAX = (1UL << 18) - 1;
 
 // Common I2C LCD address is 0x27. Change to 0x3F if that is the module's address.
 LiquidCrystal_I2C lcd(0x27, 16, 2);
+Servo servo;
 uint8_t rxBytes[4] = {0, 0, 0, 0};
 uint8_t rxCount = 0;
 uint32_t lastByteAt = 0;
@@ -20,13 +26,15 @@ struct Instrument {
   const char *name;
   const char *unit;
   uint8_t label;
+  float minValue;
+  float maxValue;
   float fullScale;
 };
 
 const Instrument instruments[] = {
-    {"Temperatura", "C", 0203, 100.0F},
-    {"Presion", "kPa", 0204, 500.0F},
-    {"Altitud", "ft", 0210, 60000.0F},
+    {"Temperatura", "C", 0203, -100.0F, 100.0F, 100.0F},
+    {"Presion", "kPa", 0204, 0.0F, 500.0F, 500.0F},
+    {"Altitud", "ft", 0210, -1000.0F, 60000.0F, 60000.0F},
 };
 
 uint8_t reverseBits(uint8_t value) {
@@ -96,7 +104,19 @@ bool decodeWord(uint32_t word, const Instrument *&instrument, float &value) {
   if (negative) {
     value = -value;
   }
+  if (value < instrument->minValue || value > instrument->maxValue) {
+    return false;
+  }
   return true;
+}
+
+void setServoFromValue(float value, const Instrument &instrument) {
+  const float normalized = (value - instrument.minValue) /
+                           (instrument.maxValue - instrument.minValue);
+  const float bounded = constrain(normalized, 0.0F, 1.0F);
+  const uint8_t degrees = static_cast<uint8_t>(
+      SERVO_MIN_DEGREES + bounded * (SERVO_MAX_DEGREES - SERVO_MIN_DEGREES) + 0.5F);
+  servo.write(degrees);
 }
 
 void handleCandidate() {
@@ -114,6 +134,7 @@ void handleCandidate() {
     dtostrf(value, 0, 1, valueText);
     snprintf(valueLine, sizeof(valueLine), "%s %s", valueText, instrument->unit);
     showMessage(instrument->name, valueLine);
+    setServoFromValue(value, *instrument);
     rxCount = 0;
     outputWordBits(word);
     return;
@@ -131,6 +152,8 @@ void handleCandidate() {
 void setup() {
   pinMode(ONE_PIN, OUTPUT);
   pinMode(ZERO_PIN, OUTPUT);
+  servo.attach(SERVO_PIN);
+  servo.write(SERVO_MIN_DEGREES);
   digitalWrite(ONE_PIN, LOW);
   digitalWrite(ZERO_PIN, LOW);
 

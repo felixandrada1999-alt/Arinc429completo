@@ -21,7 +21,7 @@ La aplicación crea las tablas y agrega tres instrumentos de ejemplo al iniciar.
 
 ## Receptor Arduino
 
-El firmware para Arduino Uno/Nano con LCD 16x2 I2C está en [arduino/receiver](arduino/receiver/README.md). Valida paridad, etiqueta, signo y SSM, muestra instrumento/valor y representa cada bit con salidas lógicas en los pines 13 y 12. Para probarlo, configura `SERIAL_ENABLED=true` y `SERIAL_PORT` con el dispositivo serie Arduino; el backend conserva el puerto abierto para evitar el reinicio USB entre envíos. No conectes esas salidas directamente a un bus ARINC 429 ni a cargas de potencia.
+El firmware para Arduino Uno/Nano con LCD 16x2 I2C está en [arduino/receiver](arduino/receiver/README.md). Valida paridad, etiqueta, signo y SSM, muestra instrumento/valor, representa cada bit en los pines 13/12 y controla un servo mediante PWM en D9 usando el mínimo y máximo del instrumento. Para probarlo, configura `SERIAL_ENABLED=true` y `SERIAL_PORT` con el dispositivo serie Arduino; el backend conserva el puerto abierto para evitar el reinicio USB entre envíos. El audio del navegador es solo una vista previa, no salida DC para el servo. No conectes UART/pines lógicos directamente a un bus ARINC 429 ni alimentes el servo desde Arduino.
 
 ## API
 

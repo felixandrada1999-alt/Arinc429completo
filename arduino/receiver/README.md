@@ -8,6 +8,7 @@ Firmware PlatformIO para **Arduino Uno/Nano ATmega328P** y LCD 16x2 con adaptado
 - Verifica la combinación de signo y SSM (`00` positivo, `11` negativo) y decodifica etiqueta/escala para Temperatura, Presión o Altitud.
 - Muestra instrumento y valor en la pantalla; una palabra inválida muestra un aviso.
 - Por cada palabra aceptada, recorre los 32 bits empezando por el bit menos significativo (orden de bytes transmitido): deja el pin 13 en HIGH durante 10 ms para un `1`, o el pin 12 en HIGH durante 10 ms para un `0`; el otro pin queda LOW. Al terminar ambos quedan LOW.
+- Mueve el servo con señal PWM en D9, mapeando el rango min–max del instrumento a 20°–160°. Esos límites son conservadores de ejemplo: ajústalos y verifica topes mecánicos para el servo real antes de conectar un mecanismo.
 
 Este es el perfil didáctico de la aplicación, **no una implementación certificada/interoperable ARINC 429**.
 
@@ -16,6 +17,7 @@ Este es el perfil didáctico de la aplicación, **no una implementación certifi
 - Arduino GND ↔ GND de la interfaz USB-serie / LCD.
 - LCD I2C: VCC → 5 V, GND → GND, SDA → A4, SCL → A5 en Uno/Nano.
 - Señal lógica `1` → pin digital 13; señal lógica `0` → pin digital 12. Ambos son salidas de 5 V en Uno/Nano. Conectar solo a entradas de alta impedancia compatibles con 5 V o a indicadores con resistencia apropiada; **no** conectar a un bus ARINC 429, servo, auricular ni cargas de potencia. Usar adaptación de nivel/aislamiento si el circuito receptor no tolera 5 V.
+- Señal de control del servo → D9. Alimentar el servo desde una fuente regulada externa dimensionada para su corriente de arranque; unir GND de fuente y Arduino solo según el diseño del servo/controlador. No alimentar el servo desde el pin 5 V del Arduino. D9 entrega pulsos PWM para control, no tensión DC proporcional.
 - La dirección LCD está configurada como `0x27`; cambiarla a `0x3F` en `src/main.cpp` si el módulo usa esa dirección.
 - Conectar el Arduino al mismo ordenador/puerto serie que configura la aplicación (`SERIAL_PORT`, por ejemplo `/dev/ttyACM0` o `/dev/ttyUSB0`). La velocidad debe ser 115200.
 

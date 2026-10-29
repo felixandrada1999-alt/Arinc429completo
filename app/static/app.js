@@ -66,6 +66,7 @@ async function loadShipments() {
     <tr>
       <td class="instrument-name">${escapeHtml(item.instrument_name)}</td>
       <td class="value-cell">${item.value}<span class="unit">${escapeHtml(item.unit)}</span></td>
+      <td>${item.min_value} — ${item.max_value}<span class="unit"> ${escapeHtml(item.unit)}</span></td>
       <td class="mono">${item.arinc_hex}</td>
       <td><span class="badge ${item.transmitted_at ? 'sent' : ''}">${item.transmitted_at ? 'Transmitido' : 'Registrado'}</span></td>
       <td><div class="row-actions"><button class="icon-button" data-action="transmit" data-id="${item.id}">Transmitir</button><button class="icon-button" data-action="edit" data-id="${item.id}">Editar</button><button class="icon-button danger" data-action="delete" data-id="${item.id}">Eliminar</button></div></td>
@@ -86,7 +87,7 @@ document.querySelector('#shipment-form').addEventListener('submit', async (event
     if (!editingId) {
       try {
         playShipmentAudio(payload.value, selectedInstrument());
-        message.textContent = 'Envío creado. El nivel relativo de audio representa el valor seleccionado.';
+        message.textContent = 'Envío creado. Se reprodujo una vista previa de audio (no es una señal DC para servo).';
       } catch (audioError) {
         message.textContent = `Envío creado; no se pudo reproducir el audio: ${audioError.message}`;
       }

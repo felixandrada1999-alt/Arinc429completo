@@ -78,6 +78,8 @@ def create_app(engine: Engine | None = None, serial_enabled: bool | None = None)
             instrument_name=shipment.instrument.name,
             unit=shipment.instrument.unit,
             value=shipment.value,
+            min_value=shipment.instrument.min_value,
+            max_value=shipment.instrument.max_value,
             arinc_word=shipment.arinc_word,
             arinc_hex=f"0x{shipment.arinc_word:08X}",
             created_at=shipment.created_at,
@@ -134,10 +136,17 @@ def create_app(engine: Engine | None = None, serial_enabled: bool | None = None)
         validate_value(instrument, payload.value)
         full_scale = max(abs(instrument.min_value), abs(instrument.max_value))
         encoded = encode_bnr(payload.value, full_scale, instrument.label)
+        transmitted_at = None
+        if hardware_enabled:
+            try:
+                send_word(settings.serial_port, settings.serial_baudrate, encoded.word)
+            except (serial.SerialException, OSError, ValueError) as exc:
+                raise HTTPException(status_code=502, detail=f"No se pudo enviar al puerto serie: {exc}") from exc
+            transmitted_at = datetime.now(timezone.utc)
         shipment.instrument = instrument
         shipment.value = payload.value
         shipment.arinc_word = encoded.word
-        shipment.transmitted_at = None
+        shipment.transmitted_at = transmitted_at
         db.commit()
         db.refresh(shipment)
         return make_shipment_read(shipment)

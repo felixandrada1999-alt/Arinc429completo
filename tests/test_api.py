@@ -33,6 +33,8 @@ def test_create_list_update_delete_shipment(client: TestClient) -> None:
     assert shipment["arinc_word"] > 0
     assert shipment["arinc_hex"].startswith("0x")
     assert shipment["instrument_name"] == instrument["name"]
+    assert shipment["min_value"] == instrument["min_value"]
+    assert shipment["max_value"] == instrument["max_value"]
 
     listed = client.get("/api/shipments")
     assert listed.status_code == 200
@@ -54,6 +56,7 @@ def test_homepage_serves_crud_interface(client: TestClient) -> None:
     response = client.get("/")
     assert response.status_code == 200
     assert "Gestor de envíos" in response.text
+    assert "RANGO MÍN.—MÁX." in response.text
     assert client.get("/static/app.js").status_code == 200
 
 
@@ -92,4 +95,31 @@ def test_create_transmits_word_when_hardware_is_enabled() -> None:
     send.assert_called_once()
     assert send.call_args.args[2] == shipment["arinc_word"]
     assert shipment["transmitted_at"] is not None
+    engine.dispose()
+
+
+def test_update_transmits_regenerated_word_when_hardware_is_enabled() -> None:
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    app = create_app(engine=engine, serial_enabled=True)
+    with patch("app.main.send_word", return_value=4) as send:
+        with TestClient(app) as test_client:
+            instrument = test_client.get("/api/instruments").json()[0]
+            created = test_client.post(
+                "/api/shipments", json={"instrument_id": instrument["id"], "value": 10.0}
+            )
+            send.reset_mock()
+            updated = test_client.put(
+                f"/api/shipments/{created.json()['id']}",
+                json={"instrument_id": instrument["id"], "value": 20.0},
+            )
+
+    assert updated.status_code == 200
+    assert updated.json()["value"] == 20.0
+    assert updated.json()["transmitted_at"] is not None
+    send.assert_called_once()
+    assert send.call_args.args[2] == updated.json()["arinc_word"]
     engine.dispose()
