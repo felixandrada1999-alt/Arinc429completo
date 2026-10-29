@@ -19,6 +19,10 @@ También puedes probar localmente sin Docker/MySQL estableciendo `DATABASE_URL=s
 
 La aplicación crea las tablas y agrega tres instrumentos de ejemplo al iniciar. Con `SERIAL_ENABLED=false`, crear un envío solo lo guarda; la transmisión queda desactivada. Con `SERIAL_ENABLED=true`, crear intenta enviar automáticamente la palabra al UART configurado y solo registra el envío si la escritura serial termina correctamente. El endpoint de retransmisión también requiere esa opción y un adaptador de laboratorio compatible.
 
+## Receptor Arduino
+
+El firmware para Arduino Uno/Nano con LCD 16x2 I2C está en [arduino/receiver](arduino/receiver/README.md). Valida paridad, etiqueta, signo y SSM, muestra instrumento/valor y representa cada bit con salidas lógicas en los pines 13 y 12. Para probarlo, configura `SERIAL_ENABLED=true` y `SERIAL_PORT` con el dispositivo serie Arduino; el backend conserva el puerto abierto para evitar el reinicio USB entre envíos. No conectes esas salidas directamente a un bus ARINC 429 ni a cargas de potencia.
+
 ## API
 
 - `GET /api/instruments`: instrumentos y límites.
