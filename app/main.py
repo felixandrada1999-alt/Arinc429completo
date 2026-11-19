@@ -24,6 +24,7 @@ DEFAULT_INSTRUMENTS = (
     {"name": "Altitud", "label": 0o210, "unit": "ft", "min_value": -1000.0, "max_value": 60000.0},
 )
 STATIC_DIR = Path(__file__).parent / "static"
+ARDUINO_CODE_PATH = STATIC_DIR.parent.parent / "arduino" / "receiver" / "src" / "main.cpp"
 
 
 def create_app(engine: Engine | None = None, serial_enabled: bool | None = None) -> FastAPI:
@@ -93,6 +94,21 @@ def create_app(engine: Engine | None = None, serial_enabled: bool | None = None)
     @app.get("/health")
     def health() -> dict[str, str | bool]:
         return {"status": "ok", "serial_enabled": hardware_enabled}
+
+    @app.get("/api/arduino-code", response_model=dict[str, str])
+    def arduino_code() -> dict[str, str]:
+        """Return the Arduino receiver source so the web UI can display it."""
+        try:
+            source = ARDUINO_CODE_PATH.read_text(encoding="utf-8")
+        except OSError as exc:
+            raise HTTPException(status_code=503, detail="No se encontró el código Arduino") from exc
+        return {"filename": "main.cpp", "code": source}
+
+    @app.get("/api/arduino-code/download", include_in_schema=False)
+    def download_arduino_code() -> FileResponse:
+        if not ARDUINO_CODE_PATH.is_file():
+            raise HTTPException(status_code=503, detail="No se encontró el código Arduino")
+        return FileResponse(ARDUINO_CODE_PATH, media_type="text/plain", filename="main.cpp")
 
     @app.get("/api/instruments", response_model=list[InstrumentRead])
     def list_instruments(db: Session = Depends(get_db)) -> list[Instrument]:

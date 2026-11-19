@@ -36,6 +36,14 @@
       <div class="table-wrap"><table><thead><tr><th>INSTRUMENTO</th><th>VALOR</th><th>RANGO MÍN.—MÁX.</th><th>PALABRA ARINC</th><th>ESTADO</th><th>ACCIONES</th></tr></thead><tbody id="shipment-list"></tbody></table></div>
       <div id="empty-state" class="empty-state">Aún no hay envíos. Crea el primero arriba.</div>
     </section>
+    <section class="card code-card">
+      <div class="section-heading">
+        <div><p class="eyebrow">FIRMWARE</p><h3>Código Arduino</h3></div>
+        <div class="code-actions"><button class="icon-button" type="button" id="copy-arduino-code">Copiar código</button><a class="icon-button" href="/api/arduino-code/download">Descargar</a></div>
+      </div>
+      <p class="code-description">Receptor para Arduino Uno/Nano: valida la palabra ARINC, muestra el valor en LCD y controla el servo.</p>
+      <pre id="arduino-code" class="code-view" aria-label="Código fuente Arduino"><code>Cargando código Arduino…</code></pre>
+    </section>
     <footer><span>DEMO · TRANSMISIÓN FÍSICA DESHABILITADA</span><a href="/docs" target="_blank" rel="noreferrer">API / Documentación ↗</a></footer>
   </main>
   <script src="/static/app.js?v=2" defer></script>

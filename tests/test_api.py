@@ -60,6 +60,17 @@ def test_homepage_serves_crud_interface(client: TestClient) -> None:
     assert client.get("/static/app.js").status_code == 200
 
 
+def test_arduino_code_is_available_in_api_and_download(client: TestClient) -> None:
+    response = client.get("/api/arduino-code")
+    assert response.status_code == 200
+    assert response.json()["filename"] == "main.cpp"
+    assert "void setup()" in response.json()["code"]
+
+    download = client.get("/api/arduino-code/download")
+    assert download.status_code == 200
+    assert "attachment" in download.headers["content-disposition"]
+
+
 def test_rejects_out_of_range_value(client: TestClient) -> None:
     instrument = client.get("/api/instruments").json()[0]
     response = client.post(

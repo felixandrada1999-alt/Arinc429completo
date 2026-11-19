@@ -5,6 +5,8 @@ const rangeHint = document.querySelector('#range-hint');
 const message = document.querySelector('#form-message');
 const rows = document.querySelector('#shipment-list');
 const emptyState = document.querySelector('#empty-state');
+const arduinoCode = document.querySelector('#arduino-code code');
+const copyArduinoCode = document.querySelector('#copy-arduino-code');
 let instruments = [];
 let editingId = null;
 
@@ -135,3 +137,19 @@ document.querySelector('#preview-audio').addEventListener('click', () => {
 });
 
 Promise.all([loadInstruments(), loadShipments()]).catch((error) => { message.textContent = error.message; });
+
+async function loadArduinoCode() {
+  try {
+    const source = await request('/api/arduino-code');
+    arduinoCode.textContent = source.code;
+    copyArduinoCode.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(source.code);
+      copyArduinoCode.textContent = '¡Copiado!';
+      window.setTimeout(() => { copyArduinoCode.textContent = 'Copiar código'; }, 1600);
+    });
+  } catch (error) {
+    arduinoCode.textContent = `No se pudo cargar el código: ${error.message}`;
+  }
+}
+
+loadArduinoCode();
